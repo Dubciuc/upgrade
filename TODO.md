@@ -48,6 +48,10 @@
 
 - [x] **Create Nextflow modules for FILTLONG** - Process for read filtering using Filtlong container with quality and length thresholds, statistics logging.
 
+- [x] **Add Flye genome assembler to Nextflow pipeline** - Integrated Flye 2.9.2 for de novo genome assembly with Docker support, configurable parameters for different sequencing technologies (ONT raw/HQ, PacBio HiFi), and proper output handling.
+
+- [x] **Configure Flye assembly parameters** - Added support for genome size estimation, sequencing mode selection, polishing iterations, metagenome mode, and comprehensive logging with assembly statistics.
+
 - [x] **Establish Airflow DAG structure** - Created airflow/dags directory and basic DAG template for genomic quality control pipeline orchestration.
 
 - [x] **Create Airflow admin user** - Configured airflow-init service to automatically create admin user with username/password for UI access.
