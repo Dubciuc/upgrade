@@ -38,7 +38,7 @@
 
 - [x] **Create Sanic backend API** - REST API with endpoints for locations, weather data, latest measurements, statistics, and health checks. CORS support and asyncpg PostgreSQL integration.
 
-- [x] **Build React frontend dashboard** - Interactive weather map with react-leaflet, real-time data visualization, temperature-based markers, statistics sidebar, mobile-responsive design.
+- [x] **Build React frontend dashboard** - Interactive weather map with react-leaflet, real-time data visualization, temperature-based markers, statistics sidebar, mobile-responsive design.  
 
 - [x] **Set up Nextflow pipeline structure** - Created nextflow directory with main.nf, nextflow.config, modules directory for NANOPLOT and FILTLONG processes.
 
