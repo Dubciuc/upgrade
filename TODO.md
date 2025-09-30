@@ -52,6 +52,14 @@
 
 - [x] **Configure Flye assembly parameters** - Added support for genome size estimation, sequencing mode selection, polishing iterations, metagenome mode, and comprehensive logging with assembly statistics.
 
+- [x] **Add MetaBAT2 binning to Nextflow pipeline** - Integrated MetaBAT2 2.15 for genome binning with automatic read mapping, depth calculation, and bin generation. Includes configurable minimum contig length and bin size parameters.
+
+- [x] **Add CONCOCT binning to Nextflow pipeline** - Integrated CONCOCT 1.1.0 for alternative genome binning approach with contig chunking, coverage table generation, and bin extraction. Configurable chunk size and overlap parameters.
+
+- [x] **Add CheckM quality assessment to Nextflow pipeline** - Integrated CheckM 1.2.2 for bin quality assessment with completeness and contamination analysis. Generates quality summaries and detailed reports for bins from both MetaBAT2 and CONCOCT.
+
+- [x] **Configure binning pipeline parameters** - Added parameters for MetaBAT2 (min_contig: 2500bp, min_bin: 200kb), CONCOCT (min_contig: 1000bp, chunk_size: 10kb), and CheckM (extension: fa) with Docker container support.
+
 - [x] **Establish Airflow DAG structure** - Created airflow/dags directory and basic DAG template for genomic quality control pipeline orchestration.
 
 - [x] **Create Airflow admin user** - Configured airflow-init service to automatically create admin user with username/password for UI access.

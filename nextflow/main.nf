@@ -32,6 +32,16 @@ if (params.help) {
     --flye_iterations               Number of polishing iterations (default: 1)
     --flye_meta                     Enable metagenome mode (default: false)
     
+    Binning options:
+    --metabat2_min_contig           Minimum contig length for MetaBAT2 (default: 2500)
+    --metabat2_min_bin              Minimum bin size for MetaBAT2 (default: 200000)
+    --concoct_min_contig            Minimum contig length for CONCOCT (default: 1000)
+    --concoct_chunk_size            Chunk size for CONCOCT (default: 10000)
+    --concoct_overlap_size          Overlap size for CONCOCT (default: 0)
+    
+    Quality assessment options:
+    --checkm_extension              File extension for CheckM (default: fa)
+    
     Resource options:
     --threads      Number of threads (default: 30)
     --memory       Memory allocation (default: 8 GB)
@@ -43,6 +53,7 @@ if (params.help) {
     nextflow run main.nf -profile docker --input_dir data/ont_reads --filtlong_min_length 1500
     nextflow run main.nf -profile docker --flye_mode '--nano-hq' --flye_genome_size '10m'
     nextflow run main.nf -profile docker --flye_meta true  # For metagenome assembly
+    nextflow run main.nf -profile docker --metabat2_min_contig 3000 --concoct_min_contig 1500
     """
     exit 0
 }
@@ -65,12 +76,25 @@ log.info """
     genome_size            : ${params.flye_genome_size}
     iterations             : ${params.flye_iterations}
     meta_mode              : ${params.flye_meta}
+    
+    Binning parameters:
+    MetaBAT2 min contig    : ${params.metabat2_min_contig ?: 2500} bp
+    MetaBAT2 min bin       : ${params.metabat2_min_bin ?: 200000} bp
+    CONCOCT min contig     : ${params.concoct_min_contig ?: 1000} bp
+    CONCOCT chunk size     : ${params.concoct_chunk_size ?: 10000} bp
+    
+    CheckM extension       : ${params.checkm_extension ?: 'fa'}
 """
 
 // Import modules
 include { NANOPLOT } from './modules/nanoplot.nf'
 include { FILTLONG } from './modules/filtlong.nf'
 include { FLYE } from './modules/flye.nf'
+include { METABAT2 } from './modules/metabat2.nf'
+include { CONCOCT } from './modules/concoct.nf'
+include { CHECKM } from './modules/checkm.nf'
+include { CHECKM as CHECKM_METABAT2 } from './modules/checkm.nf'
+include { CHECKM as CHECKM_CONCOCT } from './modules/checkm.nf'
 
 workflow {
     
@@ -97,6 +121,19 @@ workflow {
     // Stage 3: De novo Assembly with Flye (using filtered reads)
     FLYE(FILTLONG.out.reads, params.flye_mode)
     
+    // Stage 4: Genome Binning with MetaBAT2
+    METABAT2(FLYE.out.fasta, FILTLONG.out.reads)
+    
+    // Stage 5: Genome Binning with CONCOCT
+    CONCOCT(FLYE.out.fasta, FILTLONG.out.reads)
+    
+    // Stage 6: Quality Assessment with CheckM
+    // Run CheckM on MetaBAT2 bins
+    CHECKM_METABAT2(METABAT2.out.bins, "metabat2")
+    
+    // Run CheckM on CONCOCT bins  
+    CHECKM_CONCOCT(CONCOCT.out.bins, "concoct")
+    
     // Print completion message
     // Print completion message
     // Print completion message
@@ -116,7 +153,11 @@ workflow {
             ${outdir}/
             ├── 01_QC/nanoplot/          # Quality control reports
             ├── 02_filtered/             # Filtered FASTQ files and logs
-            └── 03_assembly/             # Flye assembly results
+            ├── 03_assembly/             # Flye assembly results
+            ├── 04_binning/metabat2/     # MetaBAT2 binning results
+            ├── 04_binning/concoct/      # CONCOCT binning results
+            ├── 05_quality/metabat2/     # CheckM quality assessment (MetaBAT2 bins)
+            └── 05_quality/concoct/      # CheckM quality assessment (CONCOCT bins)
             
             Assembly outputs:
             - ${outdir}/03_assembly/*.fasta.gz    # Final assembly
@@ -124,11 +165,20 @@ workflow {
             - ${outdir}/03_assembly/*.info.txt    # Assembly statistics
             - ${outdir}/03_assembly/*.flye.log    # Assembly log
             
+            Binning outputs:
+            - ${outdir}/04_binning/metabat2/*_bins/    # MetaBAT2 bins
+            - ${outdir}/04_binning/concoct/*_bins/     # CONCOCT bins
+            
+            Quality assessment outputs:
+            - ${outdir}/05_quality/*/checkm_summary.tsv    # Bin quality summaries
+            - ${outdir}/05_quality/*/checkm_results/       # Detailed CheckM results
+            
             Next steps:
             - Review QC reports in ${outdir}/01_QC/nanoplot/
             - Check filtering logs in ${outdir}/02_filtered/
             - Examine assembly statistics in ${outdir}/03_assembly/*.info.txt
-            - Assembly is ready for downstream analysis
+            - Analyze bin quality in ${outdir}/05_quality/*/checkm_summary.tsv
+            - High-quality bins (>90% complete, <5% contamination) are ready for further analysis
             """
         } else {
             log.error "Pipeline failed. Check the error messages above."
