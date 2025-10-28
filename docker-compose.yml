@@ -115,28 +115,28 @@ services:
     command:
       - -c
       - |
-        if [[ -z "${AIRFLOW_UID}" ]]; then
-          echo "Setting AIRFLOW_UID to $(id -u)"
-          export AIRFLOW_UID=$(id -u)
+        if [[ -z "$${AIRFLOW_UID}" ]]; then
+          echo "Setting AIRFLOW_UID to $$(id -u)"
+          export AIRFLOW_UID=$$(id -u)
         fi
         
         echo "Creating directories..."
         mkdir -p /opt/airflow/{logs,dags,plugins,config}
         
         echo "Setting permissions..."
-        chown -R "${AIRFLOW_UID}:0" /opt/airflow/
+        chown -R "$${AIRFLOW_UID}:0" /opt/airflow/
         
         echo "Initializing database..."
         /entrypoint airflow db init
         
         echo "Creating admin user..."
         /entrypoint airflow users create \
-          --username ${_AIRFLOW_WWW_USER_USERNAME} \
+          --username $${_AIRFLOW_WWW_USER_USERNAME} \
           --firstname Admin \
           --lastname User \
           --role Admin \
-          --email ${PGADMIN_DEFAULT_EMAIL} \
-          --password ${_AIRFLOW_WWW_USER_PASSWORD}
+          --email $${PGADMIN_DEFAULT_EMAIL} \
+          --password $${_AIRFLOW_WWW_USER_PASSWORD}
     environment:
       - AIRFLOW_UID=${AIRFLOW_UID}
       - AIRFLOW__CORE__EXECUTOR=${AIRFLOW__CORE__EXECUTOR}
@@ -412,6 +412,39 @@ services:
       retries: ${HEALTH_CHECK_RETRIES}
       start_period: ${HEALTH_CHECK_START_PERIOD}
 
+  web-dashboard:
+    build:
+      context: ./web-dashboard/backend
+      dockerfile: Dockerfile
+    container_name: ${COMPOSE_PROJECT_NAME}_web_dashboard
+    ports:
+      - "0.0.0.0:${WEB_DASHBOARD_PORT}:8000"
+    environment:
+      # Database configuration
+      - DATABASE_HOST=${POSTGRES_HOST}
+      - DATABASE_PORT=${POSTGRES_PORT}
+      - DATABASE_USERNAME=${POSTGRES_USER}
+      - DATABASE_PASSWORD=${POSTGRES_PASSWORD}
+      - DATABASE_NAME=${POSTGRES_DB}
+      
+      # Application configuration
+      - PORT=8000
+      - NODE_ENV=production
+    
+    networks:
+      - upgrade_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: ${HEALTH_CHECK_INTERVAL}
+      timeout: ${HEALTH_CHECK_TIMEOUT}
+      retries: ${HEALTH_CHECK_RETRIES}
+      start_period: ${HEALTH_CHECK_START_PERIOD}
+
   # ===========================================
   # MONITORING (Optional)
   # ===========================================
@@ -422,7 +455,7 @@ services:
       sh -c "
         apk add --no-cache curl &&
         while true; do
-          echo '=== Volume Health Check at $(date) ==='
+          echo '=== Volume Health Check at $$(date) ==='
           df -h /volumes/* 2>/dev/null || echo 'Some volumes not mounted'
           echo '======================================='
           sleep 300
@@ -450,15 +483,15 @@ services:
       sh -c "
         apk add --no-cache postgresql-client curl &&
         while true; do
-          echo 'Starting backup at $(date)'
+          echo 'Starting backup at $$(date)'
           
           # Backup PostgreSQL
-          PGPASSWORD=${POSTGRES_PASSWORD} pg_dump -h postgres -U ${POSTGRES_USER} ${POSTGRES_DB} > /backups/postgres_$(date +%Y%m%d_%H%M%S).sql
+          PGPASSWORD=${POSTGRES_PASSWORD} pg_dump -h postgres -U ${POSTGRES_USER} ${POSTGRES_DB} > /backups/postgres_$$(date +%Y%m%d_%H%M%S).sql
           
           # Keep only last 7 days of backups
           find /backups -name '*.sql' -mtime +7 -delete
           
-          echo 'Backup completed at $(date)'
+          echo 'Backup completed at $$(date)'
           sleep 86400  # 24 hours
         done
       "

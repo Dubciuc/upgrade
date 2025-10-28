@@ -371,6 +371,15 @@ frontend/.env.test.local
 frontend/.env.production.local
 frontend/storybook-static/
 
+# Web Dashboard Frontend
+web-dashboard/frontend/node_modules/
+web-dashboard/frontend/build/
+web-dashboard/frontend/dist/
+web-dashboard/frontend/.env.local
+web-dashboard/frontend/.env.development.local
+web-dashboard/frontend/.env.test.local
+web-dashboard/frontend/.env.production.local
+
 # React component library builds
 components/dist/
 components/build/

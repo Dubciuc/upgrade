@@ -33,19 +33,25 @@ function App() {
       ]);
       
       if (weatherRes.data.success) {
-        setWeatherData(weatherRes.data.data);
+        // Handle single weather object - convert to array for map function
+        const weatherItem = weatherRes.data.data;
+        setWeatherData(weatherItem ? [weatherItem] : []);
       }
       if (locationsRes.data.success) {
-        setLocations(locationsRes.data.data);
+        setLocations(locationsRes.data.data || []);
       }
       if (statsRes.data.success) {
-        setStats(statsRes.data.data);
+        setStats(statsRes.data.data || {});
       }
       
       setLastUpdate(new Date());
     } catch (error) {
       console.error('Error loading data:', error);
       setError('Failed to load data. Please try again.');
+      // Set default values to prevent null errors
+      setWeatherData([]);
+      setLocations([]);
+      setStats({});
     } finally {
       setLoading(false);
     }
@@ -116,7 +122,7 @@ function App() {
           <h3>Current Weather</h3>
           {error && <div style={{color: 'red', marginBottom: '1rem'}}>{error}</div>}
           <div className="city-list">
-            {weatherData.map((weather, index) => (
+            {Array.isArray(weatherData) && weatherData.map((weather, index) => (
               <div 
                 key={index} 
                 className="city-item"
@@ -191,7 +197,7 @@ function App() {
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             />
             
-            {weatherData.map((weather, index) => (
+            {Array.isArray(weatherData) && weatherData.map((weather, index) => (
               <CircleMarker
                 key={index}
                 center={[weather.latitude, weather.longitude]}
