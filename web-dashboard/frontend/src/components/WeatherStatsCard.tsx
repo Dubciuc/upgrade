@@ -66,7 +66,7 @@ export default function WeatherStatsCard({ stats }: WeatherStatsCardProps) {
     <Card>
       <CardContent>
         <Typography variant="h6" gutterBottom>
-          Weather Statistics
+          Metadata
         </Typography>
         
         <Box sx={{ 

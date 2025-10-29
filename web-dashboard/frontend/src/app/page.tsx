@@ -22,7 +22,6 @@ import {
 
 import Sidebar from '@/components/Sidebar';
 import WeatherMap from '@/components/WeatherMap';
-import CurrentWeatherCard from '@/components/CurrentWeatherCard';
 import WeatherStatsCard from '@/components/WeatherStatsCard';
 import { weatherApi } from '@/services/weatherApi';
 import { WeatherData, Location, WeatherStats } from '@/types/weather';
@@ -85,24 +84,13 @@ export default function Dashboard() {
       {/* Main Content */}
       <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         <AppBar position="static" elevation={1} sx={{ zIndex: 1200 }}>
-          <Toolbar>
-            <CloudQueue sx={{ mr: 2 }} />
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              Weather Dashboard
-            </Typography>
-            <IconButton color="inherit" onClick={handleRefresh} disabled={loading}>
-              <Refresh />
-            </IconButton>
-          </Toolbar>
         </AppBar>
 
         <Container maxWidth="xl" sx={{ mt: 3, mb: 3, flexGrow: 1 }}>
           {/* Header Stats */}
           <Box sx={{ mb: 3 }}>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-              <Typography variant="h4" component="h1" gutterBottom>
-                Weather Monitoring
-              </Typography>
+              
             <Box display="flex" alignItems="center" gap={1}>
               <Schedule color="action" />
               <Typography variant="body2" color="text.secondary">
@@ -136,10 +124,6 @@ export default function Dashboard() {
           gap: 3, 
           mb: 3 
         }}>
-          {/* Current Weather Card */}
-          <Box sx={{ flex: 1 }}>
-            <CurrentWeatherCard weatherData={currentWeather} />
-          </Box>
 
           {/* Weather Statistics */}
           <Box sx={{ flex: 1 }}>

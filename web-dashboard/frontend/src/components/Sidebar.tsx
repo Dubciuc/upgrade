@@ -103,7 +103,7 @@ export default function Sidebar({ selectedMenu, onMenuSelect }: SidebarProps) {
             <TravelExplore sx={{ color: 'white', fontSize: 20 }} />
           </Box>
           <Typography variant="h5" fontWeight="bold" color="text.primary">
-            Upgrade
+            UPGRADE
           </Typography>
         </Box>
       </Box>
