@@ -130,6 +130,57 @@ upgrade/
     └── frontend/                 # React components
 ```
 
+## Quick Start
+
+### Prerequisites
+- Docker and Docker Compose
+- Git
+
+### Running the Full Stack
+
+1. **Clone the repository:**
+   ```bash
+   git clone <repository-url>
+   cd upgrade
+   ```
+
+2. **Start all services:**
+   ```bash
+   docker-compose up -d
+   ```
+
+3. **Access the applications:**
+   - **Web Dashboard Frontend:** http://localhost:3000
+   - **Web Dashboard Backend API:** http://localhost:8000
+   - **Streamlit Dashboard:** http://localhost:8501
+   - **PostgreSQL (pgAdmin):** http://localhost:5050
+   - **MinIO Console:** http://localhost:9001
+   - **Airflow:** http://localhost:8080
+
+4. **Health checks:**
+   ```bash
+   # Check all services status
+   docker-compose ps
+   
+   # Check specific service logs
+   docker-compose logs web-dashboard-frontend
+   ```
+
+### Development Mode
+
+For development, you can run individual components:
+
+```bash
+# Frontend development server
+cd web-dashboard/frontend
+npm install
+npm run dev
+
+# Backend development server
+cd web-dashboard/backend
+# Follow backend-specific instructions
+```
+
 ## Development Status
 
 This project is currently in active development. The infrastructure includes:
@@ -138,6 +189,7 @@ This project is currently in active development. The infrastructure includes:
 - **Weather Data Pipeline:** Real-time weather data collection and storage
 - **Genomic Processing:** Nextflow pipeline with quality control modules
 - **Web Interface:** Streamlit dashboard for data visualization
+- **Web Dashboard:** Next.js frontend with interactive weather map and Material-UI components
 
 ## Team
 

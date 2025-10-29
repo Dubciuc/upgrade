@@ -445,6 +445,34 @@ services:
       retries: ${HEALTH_CHECK_RETRIES}
       start_period: ${HEALTH_CHECK_START_PERIOD}
 
+  web-dashboard-frontend:
+    build:
+      context: ./web-dashboard/frontend
+      dockerfile: Dockerfile
+    container_name: ${COMPOSE_PROJECT_NAME}_web_dashboard_frontend
+    ports:
+      - "0.0.0.0:${WEB_DASHBOARD_FRONTEND_PORT}:3000"
+    environment:
+      # API configuration
+      - NEXT_PUBLIC_API_BASE_URL=http://web-dashboard:8000
+      - NEXT_PUBLIC_WEATHER_API_URL=http://open-meteo:8080
+      - NODE_ENV=production
+      - PORT=3000
+    
+    networks:
+      - upgrade_network
+    depends_on:
+      - web-dashboard
+      - open-meteo
+    restart: unless-stopped
+    
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health", "||", "exit", "1"]
+      interval: ${HEALTH_CHECK_INTERVAL}
+      timeout: ${HEALTH_CHECK_TIMEOUT}
+      retries: ${HEALTH_CHECK_RETRIES}
+      start_period: ${HEALTH_CHECK_START_PERIOD}
+
   # ===========================================
   # MONITORING (Optional)
   # ===========================================
