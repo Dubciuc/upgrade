@@ -5,18 +5,13 @@ import {
   Container,
   Typography,
   Box,
-  Button,
   Alert,
   Snackbar,
   AppBar,
-  Toolbar,
-  IconButton,
   Card,
   CardContent,
 } from '@mui/material';
 import {
-  Refresh,
-  CloudQueue,
   Schedule,
 } from '@mui/icons-material';
 
@@ -30,7 +25,6 @@ export default function Dashboard() {
   const [weatherData, setWeatherData] = useState<WeatherData[]>([]);
   const [locations, setLocations] = useState<Location[]>([]);
   const [stats, setStats] = useState<WeatherStats>({} as WeatherStats);
-  const [loading, setLoading] = useState(true);
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
   const [error, setError] = useState<string | null>(null);
@@ -40,7 +34,6 @@ export default function Dashboard() {
   const loadData = useCallback(async () => {
     try {
       setError(null);
-      setLoading(true);
       
       const [weatherRes, locationsRes, statsRes] = await Promise.all([
         weatherApi.getLatestWeather(),
@@ -57,24 +50,22 @@ export default function Dashboard() {
       console.error('Error loading data:', error);
       setError('Failed to load data. Please try again.');
       setOpenSnackbar(true);
-    } finally {
-      setLoading(false);
     }
   }, []);
 
+  // Initial data load and setup auto-refresh
   useEffect(() => {
+    // Load data immediately
     loadData();
     
-    // Auto-refresh every 5 minutes
-    const interval = setInterval(loadData, 5 * 60 * 1000);
+    // Set up auto-refresh interval
+    const interval = setInterval(() => {
+      loadData();
+    }, 5 * 60 * 1000); // 5 minutes
+    
     return () => clearInterval(interval);
-  }, [loadData]);
-
-  const handleRefresh = () => {
-    loadData();
-  };
-
-  const currentWeather = weatherData.length > 0 ? weatherData[0] : null;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array is intentional - we want this to run once on mount
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh' }}>

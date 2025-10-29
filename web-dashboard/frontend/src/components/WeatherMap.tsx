@@ -15,7 +15,6 @@ import {
   ListItemIcon,
   Switch,
   FormControlLabel,
-  Divider,
   Chip,
   IconButton,
   Tooltip
@@ -25,9 +24,6 @@ import {
   Thermostat,
   Opacity,
   Air,
-  Visibility,
-  WbSunny,
-  FilterList,
   Refresh,
   Settings,
   TravelExplore

@@ -12,8 +12,6 @@ import {
   Thermostat,
   Opacity,
   Compress,
-  Visibility,
-  Air,
   WbSunny
 } from '@mui/icons-material';
 import { WeatherStats } from '@/types/weather';

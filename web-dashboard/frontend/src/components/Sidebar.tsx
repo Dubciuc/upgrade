@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Box,
   Drawer,
@@ -191,17 +191,6 @@ export default function Sidebar({ selectedMenu, onMenuSelect }: SidebarProps) {
             </ListItem>
           ))}
         </List>
-
-        {/* Version Info */}
-        <Box sx={{ px: 3, pb: 2 }}>
-          <Typography variant="caption" color="text.secondary">
-            Powered by
-          </Typography>
-          <Typography variant="caption" color="text.primary" fontWeight="bold">
-            <br />
-            Biotia 2025.07.23
-          </Typography>
-        </Box>
       </Box>
     </Drawer>
   );
