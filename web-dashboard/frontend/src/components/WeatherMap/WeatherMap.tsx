@@ -29,9 +29,10 @@ import {
   TravelExplore
 } from '@mui/icons-material';
 import { WeatherData, Location } from '@/types/weather';
+import { WeatherMapProps } from './types';
 
 // Dynamically import map to avoid SSR issues
-const DynamicMapComponent = dynamic(() => import('./MapComponent'), {
+const DynamicMapComponent = dynamic(() => import('@/components/MapComponent'), {
   loading: () => (
     <Box 
       display="flex" 
@@ -45,14 +46,7 @@ const DynamicMapComponent = dynamic(() => import('./MapComponent'), {
   ssr: false
 });
 
-interface WeatherMapProps {
-  weatherData: WeatherData[];
-  locations: Location[];
-  selectedCity: string | null;
-  onCitySelect: (city: string | null) => void;
-}
-
-export default function WeatherMap({ weatherData, locations, selectedCity, onCitySelect }: WeatherMapProps) {
+const WeatherMap: React.FC<WeatherMapProps> = ({ weatherData, locations, selectedCity, onCitySelect }) => {
   const [showWeatherMarkers, setShowWeatherMarkers] = useState(true);
   const [showLocationMarkers, setShowLocationMarkers] = useState(true);
   const [temperatureFilter, setTemperatureFilter] = useState(false);
@@ -310,4 +304,6 @@ export default function WeatherMap({ weatherData, locations, selectedCity, onCit
       </Box>
     </Box>
   );
-}
+};
+
+export { WeatherMap };

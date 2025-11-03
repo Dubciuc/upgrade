@@ -1,71 +1,62 @@
 'use client'
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
 import {
-  Container,
-  Typography,
   Box,
   Alert,
   Snackbar,
   AppBar,
-  Card,
-  CardContent,
 } from '@mui/material';
-import {
-  Schedule,
-} from '@mui/icons-material';
 
-import Sidebar from '@/components/Sidebar';
-import WeatherMap from '@/components/WeatherMap';
-import WeatherStatsCard from '@/components/WeatherStatsCard';
-import { weatherApi } from '@/services/weatherApi';
-import { WeatherData, Location, WeatherStats } from '@/types/weather';
 
-export default function Dashboard() {
-  const [weatherData, setWeatherData] = useState<WeatherData[]>([]);
-  const [locations, setLocations] = useState<Location[]>([]);
-  const [stats, setStats] = useState<WeatherStats>({} as WeatherStats);
-  const [selectedCity, setSelectedCity] = useState<string | null>(null);
-  const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
+import { Sidebar } from '@/components/Sidebar';
+import { DashboardPage } from '@/pages/DashboardPage';
+import CollectionsPage from '@/pages/CollectionsPage';
+import RunsPage from '@/pages/RunsPage';
+
+const App: React.FC = () => {
+  const [selectedMenu, setSelectedMenu] = useState('dashboard');
   const [error, setError] = useState<string | null>(null);
   const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [selectedMenu, setSelectedMenu] = useState('dashboard');
 
-  const loadData = useCallback(async () => {
-    try {
-      setError(null);
-      
-      const [weatherRes, locationsRes, statsRes] = await Promise.all([
-        weatherApi.getLatestWeather(),
-        weatherApi.getLocations(),
-        weatherApi.getWeatherStats(),
-      ]);
-      
-      setWeatherData(weatherRes);
-      setLocations(locationsRes);
-      setStats(statsRes);
-      setLastUpdate(new Date());
-      
-    } catch (error) {
-      console.error('Error loading data:', error);
-      setError('Failed to load data. Please try again.');
-      setOpenSnackbar(true);
+  const handleError = (errorMessage: string) => {
+    setError(errorMessage);
+    setOpenSnackbar(true);
+  };
+
+  const renderContent = () => {
+    switch (selectedMenu) {
+      case 'dashboard':
+        return <DashboardPage onError={handleError} />;
+      case 'collections':
+        return <CollectionsPage />;
+      case 'runs':
+        return <RunsPage />;
+      case 'public-apps':
+        return (
+          <div style={{ padding: '24px' }}>
+            <h2>Public Applications</h2>
+            <p>Coming soon...</p>
+          </div>
+        );
+      case 'mapping':
+        return (
+          <div style={{ padding: '24px' }}>
+            <h2>Mapping & Analysis</h2>
+            <p>Coming soon...</p>
+          </div>
+        );
+      case 'settings':
+        return (
+          <div style={{ padding: '24px' }}>
+            <h2>Settings</h2>
+            <p>Coming soon...</p>
+          </div>
+        );
+      default:
+        return <DashboardPage onError={handleError} />;
     }
-  }, []);
-
-  // Initial data load and setup auto-refresh
-  useEffect(() => {
-    // Load data immediately
-    loadData();
-    
-    // Set up auto-refresh interval
-    const interval = setInterval(() => {
-      loadData();
-    }, 5 * 60 * 1000); // 5 minutes
-    
-    return () => clearInterval(interval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Empty dependency array is intentional - we want this to run once on mount
+  };
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh' }}>
@@ -77,67 +68,8 @@ export default function Dashboard() {
         <AppBar position="static" elevation={1} sx={{ zIndex: 1200 }}>
         </AppBar>
 
-        <Container maxWidth="xl" sx={{ mt: 3, mb: 3, flexGrow: 1 }}>
-          {/* Header Stats */}
-          <Box sx={{ mb: 3 }}>
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-              
-            <Box display="flex" alignItems="center" gap={1}>
-              <Schedule color="action" />
-              <Typography variant="body2" color="text.secondary">
-                Last updated: {lastUpdate.toLocaleTimeString()}
-              </Typography>
-            </Box>
-          </Box>
-        </Box>
-
-        {/* Weather Map */}
-        <Box sx={{ mb: 3 }}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Interactive Weather Map
-              </Typography>
-              <WeatherMap
-                weatherData={weatherData}
-                locations={locations}
-                selectedCity={selectedCity}
-                onCitySelect={setSelectedCity}
-              />
-            </CardContent>
-          </Card>
-        </Box>
-
-        {/* Cards Container */}
-        <Box sx={{ 
-          display: 'flex', 
-          flexDirection: { xs: 'column', md: 'row' }, 
-          gap: 3, 
-          mb: 3 
-        }}>
-
-          {/* Weather Statistics */}
-          <Box sx={{ flex: 1 }}>
-            <WeatherStatsCard stats={stats} />
-          </Box>
-        </Box>
-
-        {/* Selected City Details */}
-        {selectedCity && (
-          <Box>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Details for {selectedCity}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Click on markers on the map to see detailed weather information
-                </Typography>
-              </CardContent>
-            </Card>
-          </Box>
-        )}
-        </Container>
+        {/* Dynamic Content Based on Selected Menu */}
+        {renderContent()}
       </Box>
 
       {/* Error Snackbar */}
@@ -156,4 +88,6 @@ export default function Dashboard() {
       </Snackbar>
     </Box>
   );
-}
+};
+
+export default App;

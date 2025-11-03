@@ -15,12 +15,9 @@ import {
   WbSunny
 } from '@mui/icons-material';
 import { WeatherStats } from '@/types/weather';
+import { WeatherStatsCardProps } from './types';
 
-interface WeatherStatsCardProps {
-  stats: WeatherStats;
-}
-
-export default function WeatherStatsCard({ stats }: WeatherStatsCardProps) {
+const WeatherStatsCard: React.FC<WeatherStatsCardProps> = ({ stats }) => {
   const statItems = [
     {
       label: 'Total Records',
@@ -115,4 +112,6 @@ export default function WeatherStatsCard({ stats }: WeatherStatsCardProps) {
       </CardContent>
     </Card>
   );
-}
+};
+
+export { WeatherStatsCard };

@@ -5,6 +5,7 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import { Box } from '@mui/material';
 import { WeatherData, Location } from '@/types/weather';
+import { MapComponentProps } from './types';
 import 'leaflet/dist/leaflet.css';
 
 // Fix for default markers in react-leaflet
@@ -17,13 +18,7 @@ if (typeof window !== 'undefined') {
     });
 }
 
-interface MapComponentProps {
-    weatherData: WeatherData[];
-    locations: Location[];
-    selectedCity: string | null;
-    onCitySelect: (city: string | null) => void;
-}
-export default function MapComponent({ weatherData, locations, onCitySelect }: MapComponentProps) {
+const MapComponent: React.FC<MapComponentProps> = ({ weatherData, locations, onCitySelect }) => {
     const getMarkerColor = (temperature: number) => {
         if (temperature < 0) return '#0000ff'; // Blue for very cold
         if (temperature < 10) return '#00ffff'; // Cyan for cold
@@ -141,4 +136,6 @@ export default function MapComponent({ weatherData, locations, onCitySelect }: M
                 </MapContainer>
             </Box>
         );
-    }
+    };
+
+export { MapComponent };

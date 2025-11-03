@@ -22,16 +22,14 @@ import {
   Settings,
   Info,
   TravelExplore,
+  Collections,
+  PlayArrow,
 } from '@mui/icons-material';
+import { SidebarProps } from './types';
 
 const DRAWER_WIDTH = 280;
 
-interface SidebarProps {
-  selectedMenu: string;
-  onMenuSelect: (menu: string) => void;
-}
-
-export default function Sidebar({ selectedMenu, onMenuSelect }: SidebarProps) {
+export const Sidebar: React.FC<SidebarProps> = ({ selectedMenu, onMenuSelect }) => {
   const theme = useTheme();
 
   const menuItems = [
@@ -39,12 +37,16 @@ export default function Sidebar({ selectedMenu, onMenuSelect }: SidebarProps) {
       id: 'dashboard',
       label: 'Dashboard',
       icon: <DashboardIcon />,
-      primary: true,
     },
     {
-      id: 'projects',
-      label: 'Projects',
-      icon: <FolderOpen />,
+      id: 'collections',
+      label: 'Collections',
+      icon: <Collections />,
+    },
+    {
+      id: 'runs',
+      label: 'Runs',
+      icon: <PlayArrow />,
     },
     {
       id: 'public-apps',
@@ -119,24 +121,21 @@ export default function Sidebar({ selectedMenu, onMenuSelect }: SidebarProps) {
                   borderRadius: 2,
                   py: 1.5,
                   backgroundColor: selectedMenu === item.id 
-                    ? alpha(theme.palette.primary.main, 0.1)
+                    ? alpha(theme.palette.primary.main, 0.15)
                     : 'transparent',
                   color: selectedMenu === item.id 
                     ? theme.palette.primary.main
                     : theme.palette.text.primary,
                   '&:hover': {
-                    backgroundColor: alpha(theme.palette.primary.main, 0.05),
+                    backgroundColor: selectedMenu === item.id
+                      ? alpha(theme.palette.primary.main, 0.2)
+                      : alpha(theme.palette.primary.main, 0.05),
                   },
-                  ...(item.primary && {
-                    backgroundColor: alpha(theme.palette.primary.main, 0.15),
-                    color: theme.palette.primary.main,
-                    fontWeight: 600,
-                  }),
                 }}
               >
                 <ListItemIcon
                   sx={{
-                    color: selectedMenu === item.id || item.primary
+                    color: selectedMenu === item.id
                       ? theme.palette.primary.main
                       : theme.palette.text.secondary,
                     minWidth: 40,
@@ -147,7 +146,7 @@ export default function Sidebar({ selectedMenu, onMenuSelect }: SidebarProps) {
                 <ListItemText 
                   primary={item.label}
                   primaryTypographyProps={{
-                    fontWeight: selectedMenu === item.id || item.primary ? 600 : 400,
+                    fontWeight: selectedMenu === item.id ? 600 : 400,
                   }}
                 />
               </ListItemButton>
@@ -194,4 +193,5 @@ export default function Sidebar({ selectedMenu, onMenuSelect }: SidebarProps) {
       </Box>
     </Drawer>
   );
-}
+};
+
